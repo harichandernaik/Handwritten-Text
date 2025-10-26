@@ -1,0 +1,5 @@
+flask
+easyocr
+pillow
+numpy
+flask-cors
