@@ -7,7 +7,8 @@ export default async function handler(req, res) {
 
   try {
     const backendUrl =
-      process.env.BACKEND_URL || "https://hcn369-handwritten-text-recognition.hf.space";
+      process.env.BACKEND_URL ||
+      "https://hcn369-handwritten-text-recognition.hf.space";
 
     console.log("Proxy forwarding to:", backendUrl + "/run/predict");
 
