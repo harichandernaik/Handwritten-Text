@@ -1,5 +1,7 @@
-flask
+gradio
 easyocr
-pillow
+torch
+torchvision
 numpy
-flask-cors
+Pillow
+opencv-python-headless
