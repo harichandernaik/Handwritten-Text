@@ -1,38 +1,33 @@
-import axios from "axios";
-
 export default async function handler(req, res) {
+  console.log("Proxy received request:", req.method);
+
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({ error: "Only POST requests allowed" });
   }
 
   try {
-    // 🔹 Log the request body to verify what frontend sends
-    console.log("Proxy received request:", req.body);
+    const backendUrl =
+      process.env.BACKEND_URL || "https://hcn369-handwritten-text-recognition.hf.space";
 
-    // 🔹 Send the request to your Hugging Face Space backend
-    const response = await axios.post(
-      "https://hcn369-handwritten-text-recognition.hf.space/run/predict", // ✅ Gradio endpoint
-      req.body,
-      {
-        headers: {
-          "Content-Type": req.headers["content-type"] || "multipart/form-data",
-        },
-        timeout: 60000, // optional: 60 sec timeout
-      }
-    );
+    console.log("Proxy forwarding to:", backendUrl + "/run/predict");
 
-    // 🔹 Log backend response
-    console.log("Backend responded:", response.data);
-
-    // 🔹 Return Hugging Face response to frontend
-    return res.status(200).json(response.data);
-  } catch (error) {
-    console.error("Proxy error:", error.response?.data || error.message || error);
-    return res.status(500).json({
-      error: "Failed to connect to backend",
-      detail: error.message,
+    const response = await fetch(`${backendUrl}/run/predict`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+      body: req.body, // send image/formData as is
     });
+
+    const data = await response.text();
+    console.log("Response from backend:", data.slice(0, 200));
+
+    res.status(response.status).send(data);
+  } catch (error) {
+    console.error("Proxy error:", error);
+    res.status(500).json({ error: "Error connecting to backend", details: error.message });
   }
 }
+
 
 
