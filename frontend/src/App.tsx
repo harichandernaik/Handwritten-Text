@@ -26,10 +26,10 @@ const App: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post(
-       "https://hcn369-handwritten-text-recognition.hf.space/run/predict",
-        formData
-       );
+      const response = await axios.post("/api/proxy", formData, {
+       headers: { "Content-Type": "multipart/form-data" },
+      });
+
 
 
       // Extract recognized text
