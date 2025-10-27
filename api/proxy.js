@@ -1,28 +1,27 @@
-import axios from "axios";
-import FormData from "form-data";
-
+// api/proxy.js
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    // ✅ Create a new FormData object
-    const formData = new FormData();
-    formData.append("data", req.body); // Forward the uploaded file
+    const response = await fetch("https://api-inference.huggingface.co/models/microsoft/trocr-base-handwritten", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.HF_TOKEN}`,
+      },
+      body: req.body,
+    });
 
-    // ✅ Send to Hugging Face API
-    const response = await axios.post(
-      "https://hcn369-handwritten-text-recognition.hf.space/run/predict",
-      formData,
-      {
-        headers: formData.getHeaders(),
-      }
-    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HF API error: ${errorText}`);
+    }
 
-    return res.status(200).json(response.data);
+    const result = await response.json();
+    return res.status(200).json(result);
   } catch (error) {
-    console.error("Proxy error:", error.message);
-    return res.status(500).json({ error: "Failed to connect to backend" });
+    console.error("Proxy error:", error);
+    return res.status(500).json({ error: "Failed to fetch from Hugging Face API" });
   }
 }
