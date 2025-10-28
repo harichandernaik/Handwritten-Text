@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch("https://your-backend-url.onrender.com/predict", {
+    const response = await fetch("https://hcn369-handwritten-text-recognition.hf.space/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(req.body),
@@ -16,3 +16,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Proxy failed", details: error.message });
   }
 }
+
