@@ -17,7 +17,7 @@ const App: React.FC = () => {
     }
   };
 
-  // Handle file upload to Hugging Face backend
+  // Handle file upload — use proxy on Vercel
   const handleUpload = async () => {
     if (!selectedFile) return alert("Please select an image!");
 
@@ -26,17 +26,21 @@ const App: React.FC = () => {
 
     try {
       setLoading(true);
+
+      // ✅ Changed: use Vercel proxy route instead of direct Hugging Face URL
       const response = await axios.post("/api/proxy", formData, {
-       headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
+      // ✅ Safety check: response.data may vary depending on backend output
+      const result =
+        response?.data?.data?.[0] ||
+        response?.data?.text ||
+        "No text detected. Try a clearer image.";
 
-
-      // Extract recognized text
-      const result = response.data.data[0];
-      setRecognizedText(result || "No text detected. Try a clearer image.");
+      setRecognizedText(result);
     } catch (err) {
-      console.error(err);
+      console.error("Error:", err);
       alert("Error connecting to backend. Please try again.");
     } finally {
       setLoading(false);
