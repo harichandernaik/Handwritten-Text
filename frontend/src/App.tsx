@@ -28,9 +28,12 @@ const App: React.FC = () => {
       setLoading(true);
 
       // ✅ Changed: use Vercel proxy route instead of direct Hugging Face URL
-      const response = await axios.post("/api/proxy", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axios.post(
+       "https://hcn369-handwritten-text-recognition.hf.space/",
+       formData,
+       { headers: { "Content-Type": "multipart/form-data" } }
+    );
+
 
       // ✅ Safety check: response.data may vary depending on backend output
       const result =
